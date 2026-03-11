@@ -78,3 +78,7 @@ Ensure you have the following installed on your system:
 * **Customer Management:** Detailed profiles with prescription history.
 * **Analytics Dashboard:** Visual reports on sales and revenue.
 * **Modern UI:** Clean, responsive dark/light mode interface.
+
+
+## 👥 Contributors
+Samarth Khadse | Manan Oswal | Shrikant Kole
