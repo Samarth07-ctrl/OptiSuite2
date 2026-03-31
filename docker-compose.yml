@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+
+  # ── 1. MySQL Database ────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: optimanager_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: OptiManager
+    ports:
+      - '3306:3306'          # Expose for external tools (TablePlus, MySQL Workbench)
+    volumes:
+      - db_data:/var/lib/mysql                                    # Persistent data
+      - ./sql_login.sql:/docker-entrypoint-initdb.d/init.sql      # Auto-run schema on first start
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      interval: 5s
+      timeout: 10s
+      retries: 12
+
+  # ── 2. Node.js Backend ───────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: optimanager_backend
+    restart: unless-stopped
+    ports:
+      - '3000:3000'          # Expose for direct testing (optional in prod)
+    environment:
+      DB_HOST: db             # 'db' resolves to the MySQL container on the Docker network
+      DB_USER: root
+      DB_PASSWORD: password
+      DB_NAME: OptiManager
+      JWT_SECRET: a_very_secure_random_string_for_your_jwt_tokens
+      PORT: 3000
+    depends_on:
+      db:
+        condition: service_healthy   # Wait until MySQL is actually ready
+
+  # ── 3. React Frontend (Nginx) ────────────────────────────
+  frontend:
+    build:
+      context: ./frontend-react
+      dockerfile: Dockerfile
+    container_name: optimanager_frontend
+    restart: unless-stopped
+    ports:
+      - '80:80'              # App accessible at http://localhost
+    depends_on:
+      - backend
+
+# Named volume so database data survives container restarts
+volumes:
+  db_data:

@@ -1,0 +1,235 @@
+/* ==========================================================================
+   OptiManager -- Devin-Inspired Dark UI Revamp (Refined)
+   ========================================================================== */
+
+/* 1. DESIGN SYSTEM & VARIABLES */
+:root {
+    --font-primary: 'Inter', system-ui, sans-serif;
+    
+    /* Light Mode Palette */
+    --lm-c-primary: 217 91% 60%; 
+    --lm-c-accent: 187 82% 42%;
+    --lm-c-bg: 0 0% 100%;
+    --lm-c-surface: 0 0% 100%;
+    --lm-c-border: 220 14% 91%;
+    --lm-c-text: 215 28% 17%;
+    --lm-c-text-subtle: 215 16% 47%;
+    
+    /* Dark Mode Palette (Devin Inspired) */
+    --dm-c-primary: 217 91% 60%; 
+    --dm-c-accent: 187 82% 42%;  
+    --dm-c-bg: 223 27% 9%;      /* #10131c - Devin Body Background */
+    --dm-c-surface: 222 24% 14%; /* Slightly lighter than bg for cards */
+    --dm-c-border: 220 20% 20%; /* Subtle border in dark */
+    --dm-c-text: 216 33% 97%;   /* #F2F5FA - Devin White Text */
+    --dm-c-text-subtle: 215 20% 65%; 
+
+    /* UI Metrics */
+    --radius: 0.75rem; 
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.1); 
+    --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Assign initial colors (default to light) */
+    --c-primary: var(--lm-c-primary);
+    --c-accent: var(--lm-c-accent);
+    --c-bg: var(--lm-c-bg);
+    --c-surface: var(--lm-c-surface);
+    --c-border: var(--lm-c-border);
+    --c-text: var(--lm-c-text);
+    --c-text-subtle: var(--lm-c-text-subtle);
+}
+
+.dark {
+    /* Apply dark mode colors */
+    --c-primary: var(--dm-c-primary);
+    --c-accent: var(--dm-c-accent);
+    --c-bg: var(--dm-c-bg);
+    --c-surface: var(--dm-c-surface);
+    --c-border: var(--dm-c-border);
+    --c-text: var(--dm-c-text);
+    --c-text-subtle: var(--dm-c-text-subtle);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.2); 
+}
+
+/* 2. BASE & RESET */
+html, body {
+    height: 100%;
+    font-family: var(--font-primary);
+    background-color: hsl(var(--c-bg));
+    color: hsl(var(--c-text));
+    transition: background-color var(--transition), color var(--transition);
+    line-height: 1.6;
+    overflow: hidden; /* body itself doesn't scroll — main-content does */
+}
+*, *::before, *::after { box-sizing: border-box; }
+
+/* 3. CINEMATIC AUTH PAGE */
+#authContainer { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 100; } 
+#authVideo { position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; object-fit: cover; transform: translate(-50%, -50%); z-index: -2; filter: brightness(0.7); } /* Slightly dim video */
+#authOverlay { position: absolute; inset: 0; background: hsl( / ); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: -1; }
+.auth-card { background: hsl( / ); border: 1px solid hsl( / ); border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0,0,0,0.4); backdrop-filter: blur(5px); } 
+.glowing-input { background: hsl( / ); border: 1px solid hsl( / ); color: hsl(var(--dm-c-text)); border-radius: var(--radius); padding: 12px 16px; transition: var(--transition); }
+.glowing-input::placeholder { color: hsl(var(--dm-c-text-subtle)); }
+.glowing-input:focus { outline: none; border-color: hsl(var(--c-accent)); box-shadow: 0 0 0 3px hsl( / ); }
+
+/* 4. MAIN APP LAYOUT */
+.sidebar { 
+    position: fixed; top: 1rem; left: 1rem; bottom: 1rem; width: 16rem; 
+    display: flex; flex-direction: column; padding: 0.5rem; /* Reduced padding */
+    background: hsl(var(--c-surface)); 
+    border: 1px solid hsl(var(--c-border)); 
+    border-radius: var(--radius); 
+    transition: var(--transition);
+    box-shadow: none; /* Removed shadow for flatter look like Devin */
+}
+.dark .sidebar {
+    background: hsl(var(--dm-c-surface)); /* Use dark surface */
+    border-color: hsl(var(--dm-c-border));
+}
+.sidebar-header { 
+    display: flex; align-items: center; gap: 0.75rem; 
+    padding: 1rem 0.5rem; /* Adjusted padding */
+    margin-bottom: 0.5rem; /* Reduced margin */
+    border-bottom: 1px solid hsl(var(--c-border));
+}
+.sidebar-header img { /* Blue logo for light */
+    filter: brightness(0) saturate(100%) invert(38%) sepia(96%) saturate(1480%) hue-rotate(200deg) brightness(97%) contrast(95%); 
+} 
+.dark .sidebar-header img { /* White logo for dark */
+    filter: brightness(0) saturate(100%) invert(98%) sepia(6%) saturate(63%) hue-rotate(200deg) brightness(118%) contrast(100%);
+} 
+
+.sidebar-nav { flex: 1; margin-top: 0.5rem; }
+.sidebar-footer { margin-top: auto; border-top: 1px solid hsl(var(--c-border)); padding-top: 0.5rem;}
+
+.main-content {
+    margin-left: calc(16rem + 2rem);
+    padding: 1rem;
+    height: 100vh;        /* Full viewport height */
+    overflow-y: auto;     /* This is the scrollable container */
+    overflow-x: hidden;
+}
+.header {
+    position: sticky; top: 1rem; z-index: 10;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem; margin-bottom: 1.5rem;
+    background: hsl(var(--c-surface) / 0.8);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid hsl(var(--c-border));
+    border-radius: var(--radius);
+}
+.main-area { padding: 0 0 2rem 0; }
+
+/* 5. COMPONENTS */
+.nav-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: var(--radius); font-weight: 500; color: hsl(var(--c-text-subtle)); transition: var(--transition); }
+.nav-link i { width: 20px; height: 20px; } 
+.nav-link:hover { background-color: hsl( / ); color: hsl(var(--c-primary)); } /* Softer hover */
+/* Active Nav Link Styling */
+.light .nav-link.active { background-color: hsl( / ); color: hsl(var(--c-primary)); font-weight: 600; }
+.dark .nav-link.active { background-color: hsl( / ); color: hsl(var(--c-primary)); font-weight: 600; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: var(--radius); font-weight: 600; border: none; transition: var(--transition); cursor: pointer; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+/* Updated primary button to be less bright, closer to Devin */
+.btn-primary { background: hsl(var(--c-primary)); color: hsl(var(--dm-c-text)); box-shadow: none; border: 1px solid hsl(var(--c-primary) / 0.5); }
+.btn-primary:hover:not(:disabled) { background: hsl(var(--c-primary) / 0.9); border-color: hsl(var(--c-primary)); }
+.btn-secondary { background-color: hsl(var(--c-surface)); border: 1px solid hsl(var(--c-border)); color: hsl(var(--c-text-subtle)); }
+.btn-secondary:hover:not(:disabled) { background-color: hsl(var(--c-bg)); border-color: hsl(var(--c-border)); }
+
+input, select, textarea { 
+    width: 100%; padding: 10px 14px; border-radius: var(--radius); 
+    background-color: hsl(var(--c-surface));
+    border: 1px solid hsl(var(--c-border)); 
+    transition: var(--transition); font-weight: 500; color: hsl(var(--c-text)); 
+}
+input::placeholder, textarea::placeholder { color: hsl(var(--c-text-subtle)); }
+input:focus, select:focus, textarea:focus { outline: 2px solid transparent; outline-offset: 2px; border-color: hsl(var(--c-primary)); box-shadow: 0 0 0 3px hsl(var(--c-primary) / 0.2); }
+
+/* Dark mode: force the native dropdown list to match dark theme */
+.dark select {
+    background-color: hsl(var(--dm-c-surface));
+    color: hsl(var(--dm-c-text));
+    color-scheme: dark;  /* tells browser to render the popup in dark mode */
+}
+.dark select option {
+    background-color: hsl(var(--dm-c-surface));
+    color: hsl(var(--dm-c-text));
+}
+.dark select option:checked,
+.dark select option:hover {
+    background-color: hsl(var(--dm-c-primary) / 0.3);
+}
+
+.fab { position: fixed; bottom: 1.5rem; right: 1.5rem; width: 3.5rem; height: 3.5rem; border-radius: 99px; display: flex; align-items: center; justify-content: center; background: hsl(var(--c-primary)); color: white; box-shadow: var(--shadow-md); transition: var(--transition); z-index: 20; border: none; }
+.fab:hover { background: hsl(var(--c-primary-hover)); transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 20px hsl( / ); }
+
+/* Card Style */
+.glass-card {
+    background: hsl(var(--c-surface));
+    border-radius: var(--radius);
+    border: 1px solid hsl(var(--c-border));
+    box-shadow: none; /* Flatter look */
+    transition: box-shadow var(--transition), background-color var(--transition), border-color var(--transition);
+}
+
+/* 6. MODALS */
+.modal-backdrop {
+    position: fixed; inset: 0; z-index: 99;
+    display: flex; align-items: center; justify-content: center;
+    background-color: hsl( / ); 
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    opacity: 0; transition: opacity var(--transition);
+}
+.modal-backdrop.show { opacity: 1; }
+.modal-backdrop .glass-card { transform: scale(0.95); transition: transform var(--transition); box-shadow: var(--shadow-md);} /* Add shadow back to modal */
+.modal-backdrop.show .glass-card { transform: scale(1); }
+
+/* 7. UTILITIES */
+.spinner { width: 32px; height: 32px; border: 3px solid hsl( / ); border-top-color: hsl(var(--c-primary)); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.toast { box-shadow: var(--shadow-md); border-radius: var(--radius); padding: 1rem; color: white; animation: toast-in 0.3s cubic-bezier(0.21, 1.02, 0.73, 1) forwards; }
+@keyframes toast-in { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: hsl(var(--c-border)); border-radius: 4px; border: 2px solid transparent; background-clip: padding-box; }
+.dark ::-webkit-scrollbar-thumb { background: hsl(var(--dm-c-border)); }
+
+.dark .dark-icon { display: inline-block; } .dark .light-icon { display: none; }
+.light .dark-icon { display: none; } .light .light-icon { display: inline-block; }
+.btn-icon { padding: 0.5rem; border-radius: 99px; background: hsl(var(--c-surface)); border: 1px solid hsl(var(--c-border)); line-height: 0; transition: var(--transition); color: hsl(var(--c-text-subtle));}
+.btn-icon:hover { background: hsl(var(--c-bg)); }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; } }
+.user-info-corner {
+    position: fixed; /* Position relative to the viewport */
+    top: 1.5rem;     /* Adjust spacing from top (matches header padding roughly) */
+    right: 1.5rem;    /* Adjust spacing from right */
+    z-index: 50;      /* Ensure it's above content but below modals */
+
+    padding: 0.5rem 1rem; /* Internal spacing */
+    background-color: hsl(var(--c-surface)); /* Use theme surface color */
+    border: 1px solid hsl(var(--c-border)); /* Use theme border color */
+    border-radius: var(--radius);          /* Use theme border radius */
+    box-shadow: var(--shadow-md);          /* Use theme shadow */
+    text-align: right;                     /* Align text inside */
+    font-size: 0.875rem;                   /* text-sm equivalent */
+    transition: var(--transition);         /* Add theme transition */
+}
+
+/* Optional: Slightly change background on hover */
+.user-info-corner:hover {
+     background-color: hsl(var(--c-bg)); /* Use theme background on hover */
+}
+
+/* Ensure text colors inside work for both modes */
+.user-info-corner p:first-child { /* User Name */
+    font-weight: 600; /* Make name bold */
+    color: hsl(var(--c-text)); 
+}
+.user-info-corner p:last-child { /* User Role */
+    font-size: 0.75rem; /* text-xs */
+    color: hsl(var(--c-text-subtle));
+    text-transform: capitalize;
+}

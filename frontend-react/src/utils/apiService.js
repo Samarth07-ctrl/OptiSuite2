@@ -1,7 +1,9 @@
 // frontend/js/apiService.js
 class ApiService {
     constructor() {
-        this.baseURL = 'http://localhost:3000/api'; // Ensure your backend port is correct
+        // In Docker prod: VITE_API_URL is not set so nginx proxies /api to the backend
+        // In local dev:   uses http://localhost:3000/api via .env.local
+        this.baseURL = import.meta.env.VITE_API_URL || '/api';
         this.token = localStorage.getItem('token');
     }
 

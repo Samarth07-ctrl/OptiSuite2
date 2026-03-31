@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String   @unique
+  password   String
+  role       Role     @default(employee)
+  created_at DateTime @default(now())
+
+  @@map("users")
+}
+
+enum Role {
+  admin
+  employee
+}
+
+model Customer {
+  id         Int       @id @default(autoincrement())
+  name       String
+  phone      String?   @db.VarChar(20)
+  email      String?   @unique
+  address    String?   @db.Text
+  date_added DateTime  @default(now()) @db.Date
+  od_sph     String?   @db.VarChar(10)
+  od_cyl     String?   @db.VarChar(10)
+  od_axis    String?   @db.VarChar(10)
+  od_add     String?   @db.VarChar(10)
+  os_sph     String?   @db.VarChar(10)
+  os_cyl     String?   @db.VarChar(10)
+  os_axis    String?   @db.VarChar(10)
+  os_add     String?   @db.VarChar(10)
+  pd         String?   @db.VarChar(20)
+  notes      String?   @db.Text
+  created_at DateTime  @default(now())
+  Sales      Sale[]
+
+  @@index([date_added], map: "idx_customers_date_added")
+  @@map("customers")
+}
+
+model Product {
+  id            Int         @id @default(autoincrement())
+  name          String
+  brand         String?     @db.VarChar(100)
+  frame_size    String?     @db.VarChar(20)
+  material      String?     @db.VarChar(50)
+  color         String?     @db.VarChar(50)
+  type          ProductType
+  price         Decimal     @db.Decimal(10, 2)
+  purchase_rate Decimal?    @db.Decimal(10, 2)
+  quantity      Int
+  barcode       String?     @unique @db.VarChar(100)
+  created_at    DateTime    @default(now())
+  SaleItems     SaleItem[]
+
+  @@index([brand], map: "idx_products_brand")
+  @@index([type], map: "idx_products_type")
+  @@map("products")
+}
+
+enum ProductType {
+  Frames
+  Lenses
+  ContactLenses @map("Contact Lenses")
+  Sunglasses
+  Accessories
+}
+
+model Sale {
+  id           Int        @id @default(autoincrement())
+  customer_id  Int
+  sale_date    DateTime   @db.Date
+  total_amount Decimal    @db.Decimal(10, 2)
+  status       SaleStatus @default(Processing)
+  created_at   DateTime   @default(now())
+  Customer     Customer   @relation(fields: [customer_id], references: [id], onDelete: Restrict)
+  SaleItems    SaleItem[]
+
+  @@index([sale_date], map: "idx_sales_date")
+  @@map("sales")
+}
+
+enum SaleStatus {
+  Processing
+  LensOrdered     @map("Lens Ordered")
+  ReadyForPickup  @map("Ready for Pickup")
+  Completed
+}
+
+model SaleItem {
+  id            Int     @id @default(autoincrement())
+  sale_id       Int
+  product_id    Int
+  quantity      Int
+  price_at_sale Decimal @db.Decimal(10, 2)
+  Sale          Sale    @relation(fields: [sale_id], references: [id], onDelete: Cascade)
+  Product       Product @relation(fields: [product_id], references: [id], onDelete: Restrict)
+
+  @@map("sale_items")
+}

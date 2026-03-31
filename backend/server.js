@@ -8,7 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors({ origin: 'http://127.0.0.1:5500' })); // Use your specific frontend origin
+app.use(cors()); // Allow all origins for dev to prevent port issues
 app.use(express.json()); // Parses incoming JSON requests
 
 // Use the main API router

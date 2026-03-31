@@ -7,13 +7,11 @@ Sale.create = async (saleData, connection) => {
     const conn = connection || db;
     const { customer_id, total_amount } = saleData;
     const sale_date = new Date().toISOString().slice(0, 10);
-
-    // Add status to the INSERT statement, it will use the DEFAULT 'Processing'
     const sql = 'INSERT INTO sales (customer_id, sale_date, total_amount) VALUES (?, ?, ?)';
     const [result] = await conn.query(sql, [customer_id, sale_date, total_amount]);
-    
-    // Fetch the new sale to get all data, including the default status
-    return Sale.findById(result.insertId);
+    // Return the insertId only — do NOT call findById here because
+    // the row isn't committed yet and a pool connection can't see it.
+    return { id: result.insertId };
 };
 
 Sale.addItem = async (itemData, connection) => {

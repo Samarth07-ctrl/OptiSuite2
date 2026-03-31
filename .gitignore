@@ -1,0 +1,29 @@
+﻿# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Environment files (keep .env.example, ignore real ones)
+.env
+.env.local
+.env.*.local
+
+# Database data (Docker volume mount)
+db_data/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Prisma client (generated)
+backend/node_modules/
